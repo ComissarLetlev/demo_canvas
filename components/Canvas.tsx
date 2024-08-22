@@ -1,8 +1,4 @@
-// Canvas.js
 'use client';
-
-// Canvas.js
-
 
 import React, { useState } from 'react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
@@ -19,8 +15,8 @@ const Canvas = () => {
   const [cards, setCards] = useState(initialCards);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState('');
-  const [editIndex, setEditIndex] = useState(null);
-  const [editText, setEditText] = useState('');
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editText, setEditText] = useState<string>('');
 
   const handleDrag = (index: number, e: DraggableEvent, data: DraggableData) => {
     setCards((prevCards) => {
@@ -30,7 +26,11 @@ const Canvas = () => {
     });
   };
 
-  const handleResize = (index: number, event: React.SyntheticEvent<Element, Event>, { size }: { size: { width: number; height: number; }; }) => {
+  const handleResize = (
+    index: number,
+    event: React.SyntheticEvent<Element>,
+    { size }: { size: { width: number; height: number } }
+  ) => {
     setCards((prevCards) => {
       const newCards = [...prevCards];
       newCards[index] = { ...newCards[index], width: size.width, height: size.height };
@@ -38,27 +38,29 @@ const Canvas = () => {
     });
   };
 
-  const handleShowMore = (text: React.SetStateAction<string>) => {
+  const handleShowMore = (text: string) => {
     setModalContent(text);
     setShowModal(true);
   };
 
-  const handleEditClick = (index: number | React.SetStateAction<null>) => {
+  const handleEditClick = (index: number) => {
     setEditIndex(index);
     setEditText(cards[index].text);
   };
 
-  const handleTextChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditText(e.target.value);
   };
 
   const handleSaveEdit = () => {
-    setCards((prevCards) => {
-      const newCards = [...prevCards];
-      newCards[editIndex].text = editText;
-      return newCards;
-    });
-    setEditIndex(null);
+    if (editIndex !== null) {
+      setCards((prevCards) => {
+        const newCards = [...prevCards];
+        newCards[editIndex].text = editText;
+        return newCards;
+      });
+      setEditIndex(null);
+    }
   };
 
   const addNewCard = () => {
